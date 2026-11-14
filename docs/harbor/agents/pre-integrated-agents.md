@@ -1,0 +1,186 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.harborframework.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Pre-integrated agents
+
+> Run agents supported by Harbor.
+
+Harbor includes integrations for many agents so that you don't have to install any dependencies.
+
+> [tab] CLI
+>
+> ```bash theme={"system"}
+> export OPENAI_API_KEY="..."
+> harbor run \
+>   -t hello-world/hello-world \
+>   -a codex -m openai/gpt-5.6-sol
+> ```
+
+> [tab] Config
+>
+> ```json config.json theme={"system"}
+> {
+>   "agents": [
+>     {
+>       "name": "codex",
+>       "model_name": "openai/gpt-5.6-sol"
+>     }
+>   ],
+>   "tasks": [
+>     {
+>       "name": "hello-world/hello-world"
+>     }
+>   ]
+> }
+> ```
+>
+> ```bash theme={"system"}
+> export OPENAI_API_KEY="..."
+> harbor run --config config.json
+> ```
+
+> [tab] Python
+>
+> ```python theme={"system"}
+> import asyncio
+>
+> from harbor.job import Job
+> from harbor.models.job.config import JobConfig
+> from harbor.models.trial.config import AgentConfig, TaskConfig
+>
+>
+> async def main():
+>     job = await Job.create(
+>         JobConfig(
+>             agents=[
+>                 AgentConfig(
+>                     name="codex",
+>                     model_name="openai/gpt-5.6-sol",
+>                 )
+>             ],
+>             tasks=[TaskConfig(name="hello-world/hello-world")],
+>         )
+>     )
+>     await job.run()
+>
+>
+> asyncio.run(main())
+> ```
+
+Use `-a` to select the agent and `-m` to select its model. Run
+`harbor run --help` for the current options.
+
+## Available agents
+
+> [accordion] Agent names
+>
+> `aider`, `antigravity-cli`, `antigravity-sdk`, `claude-code`, `cline-cli`,
+> `codex`, `computer-1`, `copilot-cli`, `cortex-code`, `cursor-cli`, `deerflow`,
+> `devin`, `dspy-rlm`, `eve`, `fx`, `gemini-cli`, `goose`, `grok-build`,
+> `hermes`, `junie`, `kimi-code`, `kimi-cli`, `langgraph`, `mcode`,
+> `mimo`, `mini-swe-agent`, `muse-code`, `nemo-agent`, `openclaw`, `opencode`,
+> `openhands`, `openhands-sdk`, `oracle`, `nop`, `pi`, `qwen-coder`,
+> `rovodev-cli`, `strands`, `swe-agent`, `terminus-2`, `trae-agent`, `vibe`, `fabric`, `opencode-v2`
+
+You can also run agents from the [ACP registry](https://docs.harborframework.com/agents/acp.md) or
+add a [custom agent](https://docs.harborframework.com/agents/custom-agents.md).
+
+## Agent capabilities
+
+Capabilities describe optional features supported by each integration.
+
+| Capability | Purpose | Supported agents |
+| - | - | - |
+| [ATIF](https://docs.harborframework.com/agents/atif.md) | Produce an ATIF trajectory | `acp`, `antigravity-cli`, `antigravity-sdk`, `claude-code`, `cline-cli`, `codex`, `computer-1`, `copilot-cli`, `cortex-code`, `cursor-cli`, `devin`, `eve`, `gemini-cli`, `goose`, `grok-build`, `hermes`, `junie`, `kimi-cli`, `mimo`, `mini-swe-agent`, `nemo-agent`, `openclaw`, `opencode`, `openhands`, `openhands-sdk`, `qwen-coder`, `rovodev-cli`, `strands`, `swe-agent`, `terminus-2`, `trae-agent`, `vibe`, `pi`, `fx`, `opencode-v2` |
+| [Resume](https://docs.harborframework.com/tasks/multi-step.md) | Continue the native session between task steps | `aider`, `claude-code`, `codex`, `copilot-cli`, `cortex-code`, `gemini-cli`, `goose`, `junie`, `kimi-code`, `kimi-cli`, `mcode`, `mimo`, `opencode`, `pi`, `qwen-coder`, `opencode-v2` |
+| [Load native trajectory](https://docs.harborframework.com/jobs/loading-trajectories.md#native-trajectories) | Restore an agent's native session | `claude-code`, `codex` |
+| [Load ATIF trajectory](https://docs.harborframework.com/jobs/loading-trajectories.md#atif-trajectories-1) | Load prior ATIF context | `claude-code`, `codex` |
+| [Handoff](https://docs.harborframework.com/jobs/handoff.md) | Continue a completed session locally | `claude-code` |
+| [Native configuration](#native-configuration) | Accept the agent's native configuration format | `claude-code`, `codex`, `deerflow`, `junie`, `openhands-sdk`, `qwen-coder` |
+| [Windows](https://docs.harborframework.com/tasks/environment.md#operating-system) | Run in Windows task containers | `nop`, `oracle` |
+| [ACP bridge](https://docs.harborframework.com/jobs/simulate-a-user.md#bridge) | Act as the target in a simulated-user trial | `claude-code`, `gemini-cli`, `codex`, `opencode`, `opencode-v2` |
+| [MCP servers](https://docs.harborframework.com/tasks/environment.md#mcps) | Expose task-provided MCP server configurations to the agent's runtime or prompt | `acp`, `antigravity-cli`, `antigravity-sdk`, `claude-code`, `cline-cli`, `codex`, `copilot-cli`, `cursor-cli`, `dspy-rlm`, `eve`, `fx`, `gemini-cli`, `goose`, `grok-build`, `hermes`, `junie`, `kimi-cli`, `kimi-code`, `langgraph`, `mcode`, `mimo`, `mini-swe-agent`, `openclaw`, `opencode`, `openhands`, `openhands-sdk`, `qwen-coder`, `strands`, `terminus-2`, `vibe`, `pi`, `fabric`, `opencode-v2` |
+| [Skills](https://docs.harborframework.com/tasks/skills.md) | Make task-provided skills discoverable through the agent's native configuration or prompt | `antigravity-cli`, `antigravity-sdk`, `claude-code`, `cline-cli`, `codex`, `copilot-cli`, `cursor-cli`, `eve`, `fx`, `gemini-cli`, `goose`, `grok-build`, `hermes`, `junie`, `kimi-cli`, `kimi-code`, `mcode`, `mimo`, `openclaw`, `opencode`, `openhands-sdk`, `pi`, `qwen-coder`, `terminus-2`, `vibe`, `fabric`, `opencode-v2` |
+| [HTTP MCP headers](https://docs.harborframework.com/tasks/environment.md#mcps) | Forward HTTP request headers configured for an MCP server | `claude-code`, `codex`, `opencode-v2` |
+| [Native web tools](https://docs.harborframework.com/tasks/network-policies.md#built-in-web-tools) | Disable built-in web search and fetch tools with `disable_web_search` or restricted network policies | `claude-code`, `codex`, `copilot-cli`, `cortex-code`, `deerflow`, `gemini-cli`, `mimo`, `openclaw`, `opencode`, `grok-build`, `opencode-v2` |
+
+Pi converts its active session branch to ATIF format.
+
+MCP server support means the integration passes the supplied configuration to the agent; it does not guarantee connectivity to the server.
+
+## Agent options
+
+`--effort`, `--ak`, and `--ae` are commonly used agent flags. Run
+`harbor run --help` to see the full set.
+
+| Flag | Purpose |
+| - | - |
+| `--ak`, `--agent-kwarg` | Pass a setting to the agent implementation. Values such as numbers, booleans, lists, and objects are parsed into their corresponding types. |
+| `--ae`, `--agent-env` | Set an environment variable during agent setup and execution. Values remain strings. |
+| `--effort` | Set reasoning effort for supported agents. Accepted levels depend on the agent and model. |
+
+> [accordion] Antigravity CLI gateway reasoning effort
+>
+> For `antigravity-cli` gateway runs, `reasoning_effort` accepts `low`, `medium`,
+> `high`, `xhigh`, and `max`. Harbor forwards the selected value as `--effort`
+> without translating it. The installed Antigravity version and model catalog must
+> support that level; accepting the option in Harbor does not add model support.
+> Omit the option to use the model's default effort. `none` is not accepted.
+
+> [!NOTE]
+>
+> Each agent supports its own kwargs and environment variables. Check the
+> agent's integration before setting them.
+
+```bash theme={"system"}
+harbor run \
+  -t hello-world/hello-world \
+  -a claude-code -m anthropic/claude-sonnet-5 \
+  --ak max_turns=20 \
+  --ae MCP_TIMEOUT=20000
+```
+
+Here, `max_turns=20` configures the Claude Code integration, while
+`MCP_TIMEOUT` is available to the agent process. Both flags can be **repeated**.
+
+### Native configuration
+
+Load native config file for corresponding agent. Check out [Claude Code settings.json](https://code.claude.com/docs/en/settings) and
+[Codex configuration config.toml](https://learn.chatgpt.com/docs/config-file/config-reference) as example. `claude-code`, `codex`, `deerflow`, `junie`, `openhands-sdk`, and `qwen-coder` accept a native config
+file:
+
+```bash theme={"system"}
+# Config file
+harbor run ... -a codex --ak "config=path/to/config.toml"
+```
+
+Inline JSON is also supported. Harbor converts inline JSON to the agent's native config file format and passes it to the agent:
+
+```bash theme={"system"}
+# Inline config
+harbor run ... -a codex --ak 'config={"model_context_window": 200000}'
+```
+
+### Pre-installed agents
+
+If the task image already contains the agent, for example because the
+sandbox has no internet access, skip the install with `skip_install`:
+
+```bash theme={"system"}
+harbor run ... -a opencode --ak skip_install=true
+```
+
+Harbor then trusts the image to provide the agent and everything it needs to
+run, including system packages. Steps that depend on the run, such as
+uploading Harbor's runner scripts or writing the agent's config, still run.
+The recorded agent version is the one the image provides. This option works
+for every installed agent. The image must use the paths and runtime expected
+by that integration; use `--install-only` to prepare it.
+
+`claude-code`, `codex`, `opencode`, and `opencode-v2` reuse the version installed
+in the image if it matches the requested `version`, or if no version is
+specified. Otherwise, they install the requested version (latest if unspecified).
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

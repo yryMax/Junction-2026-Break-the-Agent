@@ -1,0 +1,77 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.harborframework.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Artifacts
+
+> Declare task outputs to preserve and pass to the verifier.
+
+Artifacts are files or directories collected from the sandbox after the agent runs. Declare them in `task.toml` to preserve outputs for inspection and transfer them to a [separate verifier](https://docs.harborframework.com/tasks/separate-verifier.md).
+
+## Configuration
+
+Set `artifacts` at the top level of `task.toml`, before any section headers:
+
+```toml task.toml theme={"system"}
+artifacts = ["/app/report.json", "/app/output"]
+```
+
+Harbor saves these under `<trial-dir>/artifacts/app/`. View them in the results viewer's [Artifacts tab](https://docs.harborframework.com/results/view-job-results.md#trial-files).
+
+### Advanced options
+
+Use an object to customize collection. Strings and objects can be mixed:
+
+```toml task.toml theme={"system"}
+artifacts = [
+  "/app/report.json",
+  { source = "/app/output", destination = "output", exclude = ["*.tmp"] },
+]
+```
+
+| Field | Description |
+| - | - |
+| `source` | File or directory inside the sandbox. Required. |
+| `destination` | Relative path under `<trial-dir>/artifacts/`. Defaults to the source path without its root. |
+| `exclude` | Patterns to exclude when collecting a directory. |
+| `service` | Compose service to collect from. Defaults to `main`. |
+
+For sidecar outputs and pre-collection commands, see [Sidecar artifacts](https://docs.harborframework.com/jobs/artifact-collection.md#sidecar-artifacts).
+
+## Separate verifiers
+
+A [separate verifier](https://docs.harborframework.com/tasks/separate-verifier.md) starts in a fresh sandbox, without the agent's filesystem changes. Declare every agent-produced file it needs as an artifact. Harbor collects these after the agent runs and copies them into the verifier before grading.
+
+```toml task.toml theme={"system"}
+artifacts = ["/app/report.json"]
+
+[verifier]
+environment_mode = "separate"
+```
+
+The verifier can read the report at `/app/report.json`. Artifact paths are preserved; `destination` only changes the saved path on the host. No separate transfer configuration is needed.
+
+Undeclared outputs are not transferred, except for the currently automatic `/logs/artifacts/` directory. Dedicated verifier images bundle grading code; when reusing the agent environment, Harbor uploads `tests/`. See [Image selection](https://docs.harborframework.com/tasks/separate-verifier.md#image-selection).
+
+Harbor sanitizes artifacts uploaded to a separate verifier, so an agent can't cheat with a setuid binary or a symlink to your reference solution. See [Sanitize artifacts](https://docs.harborframework.com/tasks/separate-verifier.md#sanitize-artifacts).
+
+## Multi-step tasks
+
+Add step-specific outputs under `[[steps]]`:
+
+```toml task.toml theme={"system"}
+[[steps]]
+name = "report"
+artifacts = ["/app/report.json"]
+```
+
+These are added to task- and run-level artifacts, collected before the step's verifier, and saved under `steps/<step-name>/artifacts/`. See [Multi-step](https://docs.harborframework.com/tasks/multi-step.md).
+
+> [!WARNING]
+>
+> Automatic collection from `/logs/artifacts/` will be removed soon. Declare artifacts explicitly for new tasks.
+
+For CLI/run-level additions and collection reports, see [Artifact collection](https://docs.harborframework.com/jobs/artifact-collection.md).
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.

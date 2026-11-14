@@ -1,0 +1,59 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.harborframework.com/llms.txt
+> Use this file to discover all available pages before exploring further.
+
+# Multi-step tasks
+
+> The first major addition to the Harbor task format: tasks split into sequential steps, each with its own instruction and verifier.
+
+[← All news](https://docs.harborframework.com/news.md)
+
+April 23, 2026 · The Harbor Team
+
+We're releasing the first major addition to the Harbor task format: multi-step tasks.
+
+A multi-step task runs an agent through a sequence of ordered steps against a single, shared environment. Each step has its own instruction and verifier.
+
+Multi-step tasks are helpful when implementing long-horizon tasks with early stopping conditions, testing continual learning methods like memory, and observing an agent's ability to build on its prior work.
+
+```text theme={"system"}
+task.toml
+environment/
+  Dockerfile
+steps/
+  step-one/
+    instruction.md
+    workdir/
+      setup.sh
+      ...
+    tests/
+      test.sh
+    solution/
+      solve.sh
+  step-two/
+    instruction.md
+    ...
+tests/
+  test.sh
+```
+
+Install Harbor 0.5.0 or newer to use multi-step tasks:
+
+```bash tab="uv" theme={"system"}
+uv tool install "harbor>=0.5.0"
+```
+
+```bash tab="pip" theme={"system"}
+pip install "harbor>=0.5.0"
+```
+
+Learn more in the [multi-step tasks documentation](https://docs.harborframework.com/tasks/multi-step.md), or have your coding agent guide you through the process of creating a multi-step task by downloading our `create-task` skill:
+
+```bash theme={"system"}
+npx skills add harbor-framework/harbor --skill create-task
+```
+
+We're excited to see the multi-step tasks Harbor users build!
+
+
+This documentation is built and hosted on [Mintlify](https://mintlify.com), a developer documentation platform.
